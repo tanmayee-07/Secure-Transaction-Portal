@@ -1,0 +1,187 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ISAA PROJECT</title>
+     <link rel='stylesheet' href='/stylesheets/style.css' />
+   <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+   <script src="../public/scripts/assymetric.js"></script>
+   <script src="../public/scripts/rollups/tripledes.js"></script>
+   <script src="../public/scripts/rollups/md5.js"></script>
+   </head>
+
+<%- include('container'); -%>
+  <div class="jumbotron">
+	<h1>Dashboard</h1>
+<hr>
+<div class="container" style="background-image: url(https://tnoncology.com/wp-content/uploads/2020/03/iStock-1083294890-2.jpg); height: 400px; background-size: cover;">
+	<div class="container">
+		<form action="pay" method="post" style="box-shadow: 2px 2px 10px rgb(77, 18, 72); padding: 18px; border-radius: 10px; width: 300px;" onsubmit="return encrypted()">
+			<div class="form-group">
+				<label for="cardNumber">CARD NUMBER</label>
+				<input type="text" class="form-control" id="cardNumber" name="cardNumber" required>
+			</div>
+			<div class="form-group">
+				<label for="expiryDate">EXPIRY DATE</label>
+				<input type="text" class="form-control" id="expiryDate" name="expiryDate" required>
+			</div>
+			<div class="form-group">
+				<label for="cvv">CVV</label>
+				<input type="text" class="form-control" id="cvv" name="cvv" required>
+			</div>
+			<div class="form-group">
+				<label for="pin">PIN</label>
+				<input type="password" class="form-control" id="pin" placeholder="Use the virtual pad to enter pin" name="pin" required>
+			</div>
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</form>
+	</div>
+	<div>
+		<h3 style="position: absolute; top: 70%; left: 69%;"><strong>VIRTUAL PAD</strong></h3>
+		<table style="background-color: rgb(3, 64, 83); position: absolute; top: 80%; left: 70%; border-radius: 10px;">
+			<tr>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun1();">1</span></td>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun2();">2</span></td>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun3();">3</span></td>
+			</tr>
+			<tr>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun4();">4</span></td>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun5();">5</span></td>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun6();">6</span></td>
+			</tr>
+			<tr>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun7();">7</span></td>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun8();">8</span></td>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun9();">9</span></td>
+			</tr>
+			<tr>
+				<td style="padding: 6px;"></td>
+				<td style="padding: 6px;"><span class="btn btn-success" onclick="fun0();">0</span></td>
+				<td style="padding: 6px;"></td>
+			</tr>
+		</table>
+	</div>
+	</div>
+	<hr>
+	<p>
+	  <a href="/home/profile">View Profile</a>
+	</p>
+  </div>
+</div>
+</body>
+<script>
+	
+	function encrypted(){
+	   
+	   var encrypt1 = new JSEncrypt();
+	   
+	   var password = "jrjdhbefinrsivisniefnisenfiunsifniesnfi";
+	   var a = document.getElementById("cardNumber").value;
+	   
+	   //generating hash(message digest)
+	   var md = CryptoJS.MD5(a).toString();
+	   console.log(md);
+	   
+	   //encrypting meseage digest with the sender's private key
+	   encrypt1.setPublicKey("MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANwHBPVb3nSuO+nCtEKsRL4Wo75WAd1CC7SxUgylkV5vJgBfrjqCYKyuCPJwUwbikFpGMJE7Xi7zzYThhyGAKEsCAwEAAQ==");
+	   md = encrypt1.encrypt(md);
+	   console.log(md);
+	   
+	   //appending message digest with the message
+	   a = a+md
+	   console.log(a);
+	   
+	   
+	   //encrypting the message
+	   a = CryptoJS.TripleDES.encrypt(a, password).toString();
+	   console.log(a);
+	   
+	   
+	   //encrypting with the banks public key
+	   encrypt1.setPublicKey("MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANwHBPVb3nSuO+nCtEKsRL4Wo75WAd1CC7SxUgylkV5vJgBfrjqCYKyuCPJwUwbikFpGMJE7Xi7zzYThhyGAKEsCAwEAAQ==");
+	   password = encrypt1.encrypt(password);
+	   
+	   
+	   //appending the private key
+	   a = a+password;
+	   console.log(a);
+	   document.getElementById("cardNumber").value = a;
+	   
+	   
+	   
+	   //encrypting the pin
+	   var d = document.getElementById("pin").value;
+	   d = CryptoJS.TripleDES.encrypt(d, password).toString();
+	   document.getElementById("pin").value = d;
+		
+	   
+	   
+	   console.log(a);
+	   console.log(d);
+	   return true;
+   }
+   
+   function fun1(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"1";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun2(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"2";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun3(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"3";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun4(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"4";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun5(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"5";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun6(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"6";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun7(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"7";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun8(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"8";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun9(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"9";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+   function fun0(){
+	   var h = document.getElementById("pin").value;
+	   h = h+"0";
+	   document.getElementById("pin").value = h;
+	   console.log(h);
+   }
+</script>
+</html>
